@@ -39,7 +39,7 @@ namespace ZEQP.Framework
         /// <summary>
         /// 修改时间/时间戳/行版本
         /// </summary>
-        byte[] ModifyTime { get; set; }
+        DateTime ModifyTime { get; set; }
     }
     /// <summary>
     /// 自增基本类实体接口

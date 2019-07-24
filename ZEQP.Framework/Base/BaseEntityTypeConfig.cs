@@ -22,9 +22,9 @@ namespace ZEQP.Framework.Base
         public override void Configure(EntityTypeBuilder<T> builder)
         {
             base.Configure(builder);
-            builder.Property(p => p.CreateTime).HasDefaultValueSql("getdate()");
+            builder.Property(p => p.CreateTime).ValueGeneratedOnAdd();
             builder.Property(p => p.Deleted).HasDefaultValue(false);
-            builder.Property(p => p.ModifyTime).IsRowVersion();
+            builder.Property(p => p.ModifyTime).ValueGeneratedOnAddOrUpdate();
         }
     }
 }
