@@ -22,5 +22,13 @@ namespace ZEQP.Framework
             }
             return num.ToString();
         }
+        public static int ToInt(this string source)
+        {
+            return int.Parse(source);
+        }
+        public static DateTime ToDateTime(this string source)
+        {
+            return DateTime.Parse(source);
+        }
     }
 }
