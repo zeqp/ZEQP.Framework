@@ -18,7 +18,7 @@ namespace ZEQP.Framework
     /// <summary>
     /// 自增基类实体接口
     /// </summary>
-    public interface IBaseEntity : IBaseEntity<int>
+    public interface IBaseEntity : IBaseEntity<long>
     {
     }
 
@@ -44,7 +44,7 @@ namespace ZEQP.Framework
     /// <summary>
     /// 自增基本类实体接口
     /// </summary>
-    public interface IBusEntity : IBusEntity<int>
+    public interface IBusEntity : IBusEntity<long>
     {
     }
 }

@@ -15,7 +15,7 @@ namespace ZEQP.Framework
     /// <summary>
     /// 自增实体基类
     /// </summary>
-    public class BaseEntity : BaseEntity<int>, IBaseEntity
+    public class BaseEntity : BaseEntity<long>, IBaseEntity
     {
     }
 

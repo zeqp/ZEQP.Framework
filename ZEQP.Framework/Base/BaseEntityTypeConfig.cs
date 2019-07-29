@@ -12,7 +12,8 @@ namespace ZEQP.Framework.Base
         public virtual void Configure(EntityTypeBuilder<T> builder)
         {
             builder.HasKey(k => k.Id);
-            builder.Property(k => k.Id).ValueGeneratedOnAdd();
+            //Id不会自动生成。请使用Snowflake生成ID
+            builder.Property(k => k.Id).ValueGeneratedNever();
         }
     }
 
