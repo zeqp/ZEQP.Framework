@@ -67,7 +67,7 @@ namespace ZEQP.Framework
         }
         private long GetTicks()
         {
-            return (this.Config.Epoch.Ticks + _sw.Elapsed.Ticks) / this.Config.Duration.Ticks;
+            return ((DateTimeOffset.UtcNow - this.Config.Epoch).Ticks + _sw.Elapsed.Ticks) / this.Config.Duration.Ticks;
         }
         public long CreateId()
         {
@@ -107,7 +107,7 @@ namespace ZEQP.Framework
         /// <summary>
         /// 生成ID的开始时间
         /// </summary>
-        public DateTime Epoch { get; set; }
+        public DateTimeOffset Epoch { get; set; }
         /// <summary>
         /// 时间位数
         /// </summary>
@@ -131,7 +131,7 @@ namespace ZEQP.Framework
                 return new SnowflakeConfig()
                 {
                     AppId = 0,
-                    Epoch = new DateTime(2019, 1, 1),
+                    Epoch = new DateTime(2019, 1, 1, 0, 0, 0, DateTimeKind.Utc),
                     TimeBits = 41,
                     IdBits = 10,
                     SeqBits = 12,

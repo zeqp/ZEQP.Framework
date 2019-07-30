@@ -1,6 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using ZEQP.Framework;
 namespace ZEQP.Framework.Test
@@ -18,7 +19,7 @@ namespace ZEQP.Framework.Test
                     for (int j = 0; j < 100; j++)
                     {
                         var id = Snowflake.Instance.CreateId();
-                        Console.WriteLine(id);
+                        Console.WriteLine($"{Task.CurrentId}\t{id}");
                     }
                 });
                 listTask.Add(task);
