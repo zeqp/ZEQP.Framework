@@ -38,7 +38,7 @@ namespace ZEQP.Framework.Test
             using (var context = new BloggingContext())
             {
                 var svc = new BaseRepository(context);
-                var list = svc.GetList<Blog>(new List<object>() { 1, 2 });
+                var list = svc.GetList<Blog, int>(new List<int>() { 1, 2 });
                 Assert.AreEqual<int>(2, list.Count);
             }
         }
@@ -48,7 +48,7 @@ namespace ZEQP.Framework.Test
             using (var context = new BloggingContext())
             {
                 var svc = new BaseRepository(context);
-                var list = await svc.GetListAsync<Blog>(new List<object>() { 1, 2 });
+                var list = await svc.GetListAsync<Blog, int>(new List<int>() { 1, 2 });
                 Assert.AreEqual<int>(2, list.Count);
             }
         }
