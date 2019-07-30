@@ -75,17 +75,33 @@ namespace ZEQP.Framework
         #endregion
 
         #region GetList
-        public List<T> GetAll<T>() 
+        public List<T> GetAll<T>(bool track = true)
             where T : class
         {
-            return this.Set<T>().ToList();
+            if (track)
+                return this.Set<T>().ToList();
+            return this.Set<T>().AsNoTracking().ToList();
         }
-        public Task<List<T>> GetAllAsync<T>()
+        public Task<List<T>> GetAllAsync<T>(bool track = true)
             where T : class
         {
-            return this.Set<T>().ToListAsync();
+            if (track)
+                return this.Set<T>().ToListAsync();
+            return this.Set<T>().AsNoTracking().ToListAsync();
         }
-        public List<T> GetList<T,K>(List<K> ids)
+        public List<T> GetList<T, K>(List<K> ids, bool track = true)
+            where T : class
+        {
+            var keyProp = this.Context.Model.FindEntityType(typeof(T)).FindPrimaryKey().Properties;
+            var keyName = keyProp.Select(x => x.Name).Single();
+            var right = Expression.Constant(ids);
+            ParameterExpression param = Expression.Parameter(typeof(T), "x");
+            var left = Expression.Property(param, keyName);
+            Expression filter = Expression.Call(right, ids.GetType().GetMethod("Contains"), left);
+            Expression<Func<T, bool>> pred = Expression.Lambda<Func<T, bool>>(filter, param);
+            return this.GetList<T>(pred, track);
+        }
+        public Task<List<T>> GetListAsync<T, K>(List<K> ids, bool track = true)
             where T : class
         {
             var keyProp = this.Context.Model.FindEntityType(typeof(T)).FindPrimaryKey().Properties;
@@ -96,20 +112,7 @@ namespace ZEQP.Framework
             var left = Expression.Property(param, keyName);
             Expression filter = Expression.Call(right, ids.GetType().GetMethod("Contains"), left);
             Expression<Func<T, bool>> pred = Expression.Lambda<Func<T, bool>>(filter, param);
-            return this.GetList<T>(pred);
-        }
-        public Task<List<T>> GetListAsync<T, K>(List<K> ids)
-            where T : class
-        {
-            var keyProp = this.Context.Model.FindEntityType(typeof(T)).FindPrimaryKey().Properties;
-            var keyName = keyProp.Select(x => x.Name).Single();
-            var right = Expression.Constant(ids);
-
-            ParameterExpression param = Expression.Parameter(typeof(T), "x");
-            var left = Expression.Property(param, keyName);
-            Expression filter = Expression.Call(right, ids.GetType().GetMethod("Contains"), left);
-            Expression<Func<T, bool>> pred = Expression.Lambda<Func<T, bool>>(filter, param);
-            return this.GetListAsync<T>(pred);
+            return this.GetListAsync<T>(pred, track);
         }
         public List<T> GetList<T>(Expression<Func<T, bool>> predicate, bool track = true)
             where T : class

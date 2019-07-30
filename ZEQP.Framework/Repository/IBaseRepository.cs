@@ -94,13 +94,67 @@ namespace ZEQP.Framework
         #endregion
 
         #region GetList
-        List<T> GetAll<T>() where T : class;
-        Task<List<T>> GetAllAsync<T>() where T : class;
-        List<T> GetList<T, K>(List<K> ids) where T : class;
-        Task<List<T>> GetListAsync<T, K>(List<K> ids) where T : class;
+        /// <summary>
+        /// 拿到所有数据
+        /// </summary>
+        /// <typeparam name="T">实体类型</typeparam>
+        /// <param name="track">是否跟踪</param>
+        /// <returns>所有数据</returns>
+        List<T> GetAll<T>(bool track = true) where T : class;
+        /// <summary>
+        /// 拿到所有数据
+        /// </summary>
+        /// <typeparam name="T">实体类型</typeparam>
+        /// <param name="track">是否跟踪</param>
+        /// <returns>所有数据</returns>
+        Task<List<T>> GetAllAsync<T>(bool track = true) where T : class;
+        /// <summary>
+        /// 根据ID集合，拿到所有ID数据集合
+        /// </summary>
+        /// <typeparam name="T">实体类型</typeparam>
+        /// <typeparam name="K">主键类型</typeparam>
+        /// <param name="ids"></param>
+        /// <param name="track">是否跟踪</param>
+        /// <returns>数据集合</returns>
+        List<T> GetList<T, K>(List<K> ids, bool track = true) where T : class;
+        /// <summary>
+        /// 根据ID集合，拿到所有ID数据集合
+        /// </summary>
+        /// <typeparam name="T">实体类型</typeparam>
+        /// <typeparam name="K">主键类型</typeparam>
+        /// <param name="ids"></param>
+        /// <param name="track">是否跟踪</param>
+        /// <returns>数据集合</returns>
+        Task<List<T>> GetListAsync<T, K>(List<K> ids, bool track = true) where T : class;
+        /// <summary>
+        /// 根据相询条件，拿到数据集合
+        /// </summary>
+        /// <typeparam name="T">实体类型</typeparam>
+        /// <param name="predicate">相询条件</param>
+        /// <param name="track">是否跟踪</param>
+        /// <returns>数据集合</returns>
         List<T> GetList<T>(Expression<Func<T, bool>> predicate, bool track = true) where T : class;
+        /// <summary>
+        /// 根据相询条件，拿到数据集合
+        /// </summary>
+        /// <typeparam name="T">实体类型</typeparam>
+        /// <param name="predicate">相询条件</param>
+        /// <param name="track">是否跟踪</param>
+        /// <returns>数据集合</returns>
         Task<List<T>> GetListAsync<T>(Expression<Func<T, bool>> predicate, bool track = true) where T : class;
+        /// <summary>
+        /// 根据相询条件，拿到数据集合
+        /// </summary>
+        /// <typeparam name="T">实体类型</typeparam>
+        /// <param name="predicate">相询条件</param>
+        /// <returns>数据集合</returns>
         List<T> GetList<T>(IQueryable<T> queryable) where T : class;
+        /// <summary>
+        /// 根据相询条件，拿到数据集合
+        /// </summary>
+        /// <typeparam name="T">实体类型</typeparam>
+        /// <param name="predicate">相询条件</param>
+        /// <returns>数据集合</returns>
         Task<List<T>> GetListAsync<T>(IQueryable<T> queryable) where T : class;
         #endregion
     }
