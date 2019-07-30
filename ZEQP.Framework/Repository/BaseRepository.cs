@@ -75,7 +75,103 @@ namespace ZEQP.Framework
         #endregion
 
         #region GetList
+        public List<T> GetAll<T>() 
+            where T : class
+        {
+            return this.Set<T>().ToList();
+        }
+        public Task<List<T>> GetAllAsync<T>()
+            where T : class
+        {
+            return this.Set<T>().ToListAsync();
+        }
+        public List<T> GetList<T>(List<object> ids)
+            where T : class
+        {
+            var keyProp = this.Context.Model.FindEntityType(typeof(T)).FindPrimaryKey().Properties;
+            var keyName = keyProp.Select(x => x.Name).Single();
+            var keyType = keyProp.Select(x => x.PropertyInfo).Single();
+            var right = Expression.Constant(ids, ids.GetType());
+            var typeName = keyType.PropertyType.FullName;
+            var method = ids.GetType().GetMethod("Contains");
+            switch (typeName)
+            {
+                case "System.Int32":
+                    {
+                        var values = ids.Select(s => (int)s).ToList();
+                        right = Expression.Constant(values, values.GetType());
+                        method = values.GetType().GetMethod("Contains");
+                    }; break;
+                case "System.String":
+                    {
+                        var values = ids.Select(s => s.ToString()).ToList();
+                        right = Expression.Constant(values, values.GetType());
+                        method = values.GetType().GetMethod("Contains");
+                    }; break;
+                case "System.Int64":
+                    {
+                        var values = ids.Select(s => (long)s).ToList();
+                        right = Expression.Constant(values, values.GetType());
+                        method = values.GetType().GetMethod("Contains");
+                    }; break;
+                case "System.Guid":
+                    {
+                        var values = ids.Select(s => (Guid)s).ToList();
+                        right = Expression.Constant(values, values.GetType());
+                        method = values.GetType().GetMethod("Contains");
+                    }; break;
+                default: break;
+            }
+            ParameterExpression param = Expression.Parameter(typeof(T), "x");
+            var left = Expression.Property(param, keyName);
+            Expression filter = Expression.Call(right, method, left);
+            Expression<Func<T, bool>> pred = Expression.Lambda<Func<T, bool>>(filter, param);
+            return this.GetList<T>(pred);
+        }
+        public Task<List<T>> GetListAsync<T>(List<object> ids)
+            where T : class
+        {
+            var keyProp = this.Context.Model.FindEntityType(typeof(T)).FindPrimaryKey().Properties;
+            var keyName = keyProp.Select(x => x.Name).Single();
+            var keyType = keyProp.Select(x => x.PropertyInfo).Single();
 
+            var right = Expression.Constant(ids, ids.GetType());
+            var typeName = keyType.PropertyType.FullName;
+            var method = ids.GetType().GetMethod("Contains");
+            switch (typeName)
+            {
+                case "System.Int32":
+                    {
+                        var values = ids.Select(s => (int)s).ToList();
+                        right = Expression.Constant(values, values.GetType());
+                        method = values.GetType().GetMethod("Contains");
+                    }; break;
+                case "System.String":
+                    {
+                        var values = ids.Select(s => s.ToString()).ToList();
+                        right = Expression.Constant(values, values.GetType());
+                        method = values.GetType().GetMethod("Contains");
+                    }; break;
+                case "System.Int64":
+                    {
+                        var values = ids.Select(s => (long)s).ToList();
+                        right = Expression.Constant(values, values.GetType());
+                        method = values.GetType().GetMethod("Contains");
+                    }; break;
+                case "System.Guid":
+                    {
+                        var values = ids.Select(s => (Guid)s).ToList();
+                        right = Expression.Constant(values, values.GetType());
+                        method = values.GetType().GetMethod("Contains");
+                    }; break;
+                default: break;
+            }
+            ParameterExpression param = Expression.Parameter(typeof(T), "x");
+            var left = Expression.Property(param, keyName);
+            Expression filter = Expression.Call(right, method, left);
+            Expression<Func<T, bool>> pred = Expression.Lambda<Func<T, bool>>(filter, param);
+            return this.GetListAsync<T>(pred);
+        }
         public List<T> GetList<T>(Expression<Func<T, bool>> predicate, bool track = true)
             where T : class
         {

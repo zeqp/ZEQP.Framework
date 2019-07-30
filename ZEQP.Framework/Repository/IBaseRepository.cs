@@ -94,6 +94,10 @@ namespace ZEQP.Framework
         #endregion
 
         #region GetList
+        List<T> GetAll<T>() where T : class;
+        Task<List<T>> GetAllAsync<T>() where T : class;
+        List<T> GetList<T>(List<object> ids) where T : class;
+        Task<List<T>> GetListAsync<T>(List<object> ids) where T : class;
         List<T> GetList<T>(Expression<Func<T, bool>> predicate, bool track = true) where T : class;
         Task<List<T>> GetListAsync<T>(Expression<Func<T, bool>> predicate, bool track = true) where T : class;
         List<T> GetList<T>(IQueryable<T> queryable) where T : class;
