@@ -52,5 +52,16 @@ namespace ZEQP.Framework.Test
                 Assert.AreEqual<int>(2, list.Count);
             }
         }
+
+        [TestMethod]
+        public void TestGetPage1()
+        {
+            using (var context = new BloggingContext())
+            {
+                var svc = new BaseRepository(context);
+                var result = svc.GetPage<Blog, dynamic>(new PageQuery<dynamic>() { Page = 1, Size = 10, Order = "Rating", Sort = "AES", Query = new {Url="http://a." } });
+                Assert.IsNotNull(result);
+            }
+        }
     }
 }

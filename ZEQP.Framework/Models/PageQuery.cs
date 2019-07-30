@@ -9,6 +9,7 @@ namespace ZEQP.Framework
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class PageQuery<T>
+        where T : class, new()
     {
         /// <summary>
         /// 页大小
@@ -26,6 +27,10 @@ namespace ZEQP.Framework
         /// 排序方式 AES,DESC
         /// </summary>
         public string Sort { get; set; }
+        /// <summary>
+        /// 模糊相配查询
+        /// </summary>
+        public string Match { get; set; }
         /// <summary>
         /// 相询实体
         /// </summary>

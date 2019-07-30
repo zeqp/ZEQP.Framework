@@ -157,5 +157,9 @@ namespace ZEQP.Framework
         /// <returns>数据集合</returns>
         Task<List<T>> GetListAsync<T>(IQueryable<T> queryable) where T : class;
         #endregion
+
+        #region GetPage
+        PageResult<T> GetPage<T, M>(PageQuery<M> query) where T : class where M : class, new();
+        #endregion
     }
 }

@@ -141,7 +141,150 @@ namespace ZEQP.Framework
         #endregion
 
         #region GetPage
+        public PageResult<T> GetPage<T, M>(PageQuery<M> query)
+            where T : class
+            where M : class, new()
+        {
+            var queryable = this.Set<T>().AsNoTracking().AsQueryable();
+            var model = query.Query;
+            var outer = PredicateBuilder.True<T>();
+            var entityProps = typeof(T).GetProperties();
+            if (model != null)
+            {
+                var listProp = model.GetType().GetProperties();
+                var listEntityProp = entityProps.Select(s => s.Name).ToList();
+                var param = Expression.Parameter(typeof(T), "x");
+                if (!String.IsNullOrEmpty(query.Match))
+                {
+                    var nameOrCodeProp = listProp.Where(w => w.Name.EndsWith("Name") || w.Name.EndsWith("Code")).ToList();
+                    var inner = PredicateBuilder.False<T>();
+                    foreach (var prop in nameOrCodeProp)
+                    {
+                        //是否存再此字段，只有存再的字段才能做模糊查询
+                        if (!listEntityProp.Contains(prop.Name)) continue;
+                        //判断是否在查询实体里已经做了查询，如果查询实体里有值。就不用做模糊查询了
+                        if (!prop.IsDefault(model)) continue;
+                        Expression left = Expression.Property(param, prop.Name);
+                        var right = Expression.Constant(query.Match, prop.PropertyType);
+                        //如果是可空类型，要转成对应的非空类型
+                        if (prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
+                            right = Expression.Constant(query.Match, Nullable.GetUnderlyingType(prop.PropertyType));
+                        Expression filter = Expression.Call(left, typeof(string).GetMethod("Contains", new[] { typeof(string) }), right);
+                        Expression<Func<T, bool>> pred = Expression.Lambda<Func<T, bool>>(filter, param);
+                        inner = inner.Or(pred);
+                    }
+                    outer = outer.And(inner);
+                }
+                foreach (var prop in listProp)
+                {
+                    if (prop.IsDefault(model)) continue;
+                    var propVal = prop.GetValue(model);
+                    var right = Expression.Constant(propVal, prop.PropertyType);
+                    //如果是可空类型，要转成对应的非空类型
+                    if (prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
+                        right = Expression.Constant(propVal, Nullable.GetUnderlyingType(prop.PropertyType));
+                    var propType = prop.PropertyType;
+                    if (propType == typeof(string))
+                    {
+                        if (!listEntityProp.Contains(prop.Name)) continue;
+                        Expression left = Expression.Property(param, prop.Name);
+                        var propValStr = propVal.ToString();
+                        Expression filter = Expression.Equal(left, right);
+                        if (propValStr.StartsWith("%") || propValStr.EndsWith("%"))
+                        {
+                            propValStr = propValStr.Replace("%", "");
+                            right = Expression.Constant(propValStr, prop.PropertyType);
+                            filter = Expression.Call(left, typeof(string).GetMethod("Contains", new[] { typeof(string) }), right);
+                        }
+                        Expression<Func<T, bool>> pred = Expression.Lambda<Func<T, bool>>(filter, param);
+                        outer = outer.And(pred);
+                    }
+                    else if (prop.Name.Contains("Start") || prop.Name.Contains("Begin"))
+                    {
+                        if (listEntityProp.Contains(prop.Name))
+                        {
+                            Expression left = Expression.Property(param, prop.Name);
+                            Expression filter = Expression.GreaterThanOrEqual(left, right);
+                            Expression<Func<T, bool>> pred = Expression.Lambda<Func<T, bool>>(filter, param);
+                            outer = outer.And(pred);
+                        }
+                        else if (listEntityProp.Contains(prop.Name.Replace("Start", "")))
+                        {
+                            var left = Expression.Property(param, prop.Name.Replace("Start", ""));
+                            Expression filter = Expression.GreaterThanOrEqual(left, right);
+                            Expression<Func<T, bool>> pred = Expression.Lambda<Func<T, bool>>(filter, param);
+                            outer = outer.And(pred);
+                        }
+                        else if (listEntityProp.Contains(prop.Name.Replace("Begin", "")))
+                        {
+                            var left = Expression.Property(param, prop.Name.Replace("Begin", ""));
+                            Expression filter = Expression.GreaterThanOrEqual(left, right);
+                            Expression<Func<T, bool>> pred = Expression.Lambda<Func<T, bool>>(filter, param);
+                            outer = outer.And(pred);
+                        }
+                    }
+                    else if (prop.Name.Contains("End"))
+                    {
+                        if (listEntityProp.Contains(prop.Name))
+                        {
+                            Expression left = Expression.Property(param, prop.Name);
+                            Expression filter = Expression.LessThanOrEqual(left, right);
+                            Expression<Func<T, bool>> pred = Expression.Lambda<Func<T, bool>>(filter, param);
+                            outer = outer.And(pred);
+                        }
+                        else if (listEntityProp.Contains(prop.Name.Replace("End", "")))
+                        {
+                            var left = Expression.Property(param, prop.Name.Replace("End", ""));
+                            Expression filter = Expression.LessThanOrEqual(left, right);
+                            Expression<Func<T, bool>> pred = Expression.Lambda<Func<T, bool>>(filter, param);
+                            outer = outer.And(pred);
+                        }
+                    }
+                    else if (propType.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEnumerable<>)) && prop.Name.Contains("List"))
+                    {
+                        if (!listEntityProp.Contains(prop.Name.Replace("List", ""))) continue;
+                        var left = Expression.Property(param, prop.Name.Replace("List", ""));
+                        Expression filter = Expression.Call(right, propType.GetMethod("Contains"), left);
+                        Expression<Func<T, bool>> pred = Expression.Lambda<Func<T, bool>>(filter, param);
+                        outer = outer.And(pred);
+                    }
+                    else
+                    {
+                        if (!listEntityProp.Contains(prop.Name)) continue;
+                        Expression left = Expression.Property(param, prop.Name);
+                        Expression filter = Expression.Equal(left, right);
+                        Expression<Func<T, bool>> pred = Expression.Lambda<Func<T, bool>>(filter, param);
+                        outer = outer.And(pred);
+                    }
+                }
+            }
+            queryable = queryable.Where(outer);
+            var result = new PageResult<T>();
+            result.Count = queryable.Count();
+            var totalPage = result.Count % query.Size == 0 ? (result.Count / query.Size) : (result.Count / query.Size + 1);
+            if (query.Page > totalPage) query.Page = totalPage;
+            if (query.Page <= 0) query.Page = 1;
+            if (query.Size <= 0 || query.Size > 100) query.Size = 100;
+            if (String.IsNullOrEmpty(query.Order)) query.Order = this.Context.Model.FindEntityType(typeof(T)).FindPrimaryKey().Properties.Select(s => s.Name).Single();
+            if (String.IsNullOrEmpty(query.Sort)) query.Sort = "AES";
+            result.Page = query.Page;
+            var sortingDir = "OrderBy";
+            if (!query.Sort.Equals("AES", StringComparison.CurrentCultureIgnoreCase))
+                sortingDir = "OrderByDescending";
 
+            ParameterExpression param1 = Expression.Parameter(typeof(T), query.Order);
+            var pi = typeof(T).GetProperty(query.Order);
+            Type[] types = new Type[2];
+            types[0] = typeof(T);
+            types[1] = pi.PropertyType;
+            Expression expr = Expression.Call(typeof(Queryable), sortingDir, types, queryable.Expression, Expression.Lambda(Expression.Property(param1, query.Order), param1));
+            queryable = queryable.Provider.CreateQuery<T>(expr);
+
+            var skipCount = (query.Page - 1) * query.Size;
+            queryable = queryable.Skip(skipCount).Take(query.Size);
+            result.Data = queryable.ToList();
+            return result;
+        }
         #endregion
     }
 }
