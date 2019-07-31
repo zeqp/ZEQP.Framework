@@ -171,19 +171,25 @@ namespace ZEQP.Framework
         #endregion
 
         #region Update
-        bool Upddate<T>(T entity, bool save = true, List<string> props = null) where T : class;
+        bool Update<T>(T entity, bool save = true, List<string> props = null) where T : class;
         bool Update<T>(List<T> list, bool save = true, List<string> props = null) where T : class;
-        Task<bool> UpddateAsync<T>(T entity, bool save = true, List<string> props = null) where T : class;
+        Task<bool> UpdateAsync<T>(T entity, bool save = true, List<string> props = null) where T : class;
         Task<bool> UpdateAsync<T>(List<T> list, bool save = true, List<string> props = null) where T : class;
         bool Update<T>(Expression<Func<T, bool>> where, Action<T> action) where T : class;
         Task<bool> UpdateAsync<T>(Expression<Func<T, bool>> where, Action<T> action) where T : class;
         #endregion
 
         #region Delete
+        bool Delete<T>(object id) where T : class;
+        bool Delete<T, K>(List<K> ids) where T : class;
+        Task<bool> DeleteAsync<T>(object id) where T : class;
+        Task<bool> DeleteAsync<T, K>(List<K> ids) where T : class;
         bool Delete<T>(T entity, bool save = true) where T : class;
         bool Delete<T>(List<T> list, bool save = true) where T : class;
         Task<bool> DeleteAsync<T>(T entity, bool save = true) where T : class;
         Task<bool> DeleteAsync<T>(List<T> list, bool save = true) where T : class;
+        bool Delete<T>(Expression<Func<T, bool>> where) where T : class;
+        Task<bool> DeleteAsync<T>(Expression<Func<T, bool>> where) where T : class;
         #endregion
 
         #region Map

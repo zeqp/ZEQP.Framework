@@ -438,7 +438,7 @@ namespace ZEQP.Framework
             where T : class
         {
             this.Set<T>().Add(entity);
-            if(save)
+            if (save)
                 return this.SaveChanges() > 0;
             return true;
         }
@@ -469,7 +469,7 @@ namespace ZEQP.Framework
         #endregion
 
         #region Update
-        public bool Upddate<T>(T entity, bool save = true, List<string> props = null)
+        public bool Update<T>(T entity, bool save = true, List<string> props = null)
             where T : class
         {
             var entry = this.Context.Entry<T>(entity);
@@ -508,7 +508,7 @@ namespace ZEQP.Framework
                 return this.SaveChanges() > 0;
             return true;
         }
-        public async Task<bool> UpddateAsync<T>(T entity, bool save = true, List<string> props = null)
+        public async Task<bool> UpdateAsync<T>(T entity, bool save = true, List<string> props = null)
             where T : class
         {
             var entry = this.Context.Entry<T>(entity);
@@ -570,6 +570,30 @@ namespace ZEQP.Framework
         #endregion
 
         #region Delete
+        public bool Delete<T>(object id)
+            where T : class
+        {
+            var entity = this.Get<T>(id);
+            return this.Delete(entity);
+        }
+        public bool Delete<T, K>(List<K> ids)
+            where T : class
+        {
+            var list = this.GetList<T, K>(ids);
+            return this.Delete(list);
+        }
+        public async Task<bool> DeleteAsync<T>(object id)
+            where T : class
+        {
+            var entity = await this.GetAsync<T>(id);
+            return await this.DeleteAsync(entity);
+        }
+        public async Task<bool> DeleteAsync<T, K>(List<K> ids)
+            where T : class
+        {
+            var list = await this.GetListAsync<T, K>(ids);
+            return await this.DeleteAsync(list);
+        }
         public bool Delete<T>(T entity, bool save = true)
             where T : class
         {
@@ -611,6 +635,18 @@ namespace ZEQP.Framework
             if (save)
                 return await this.SaveChangesAsync() > 0;
             return true;
+        }
+        public bool Delete<T>(Expression<Func<T, bool>> where)
+            where T : class
+        {
+            var list = this.GetList<T>(where);
+            return this.Delete(list);
+        }
+        public async Task<bool> DeleteAsync<T>(Expression<Func<T, bool>> where)
+            where T : class
+        {
+            var list = await this.GetListAsync<T>(where);
+            return await this.DeleteAsync(list);
         }
         #endregion
 
