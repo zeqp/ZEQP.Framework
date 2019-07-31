@@ -433,19 +433,186 @@ namespace ZEQP.Framework
         }
         #endregion
 
-
-        #region Create
-
+        #region Add
+        public bool Add<T>(T entity, bool save = true)
+            where T : class
+        {
+            this.Set<T>().Add(entity);
+            if(save)
+                return this.SaveChanges() > 0;
+            return true;
+        }
+        public bool Add<T>(List<T> list, bool save = true)
+            where T : class
+        {
+            this.Set<T>().AddRange(list);
+            if (save)
+                return this.SaveChanges() > 0;
+            return true;
+        }
+        public async Task<bool> AddAsync<T>(T entity, bool save = true)
+            where T : class
+        {
+            await this.Set<T>().AddAsync(entity);
+            if (save)
+                return await this.SaveChangesAsync() > 0;
+            return true;
+        }
+        public async Task<bool> AddAsync<T>(List<T> list, bool save = true)
+            where T : class
+        {
+            await this.Set<T>().AddRangeAsync(list);
+            if (save)
+                return await this.SaveChangesAsync() > 0;
+            return true;
+        }
         #endregion
 
         #region Update
-
+        public bool Upddate<T>(T entity, bool save = true, List<string> props = null)
+            where T : class
+        {
+            var entry = this.Context.Entry<T>(entity);
+            if (props == null || props.Count == 0)
+                entry.State = EntityState.Modified;
+            else
+            {
+                foreach (var eProp in entry.Properties)
+                {
+                    eProp.IsModified = props.Contains(eProp.Metadata.Name);
+                }
+            }
+            this.Set<T>().Update(entity);
+            if (save)
+                return this.SaveChanges() > 0;
+            return true;
+        }
+        public bool Update<T>(List<T> list, bool save = true, List<string> props = null)
+            where T : class
+        {
+            foreach (var entity in list)
+            {
+                var entry = this.Context.Entry<T>(entity);
+                if (props == null || props.Count == 0)
+                    entry.State = EntityState.Modified;
+                else
+                {
+                    foreach (var eProp in entry.Properties)
+                    {
+                        eProp.IsModified = props.Contains(eProp.Metadata.Name);
+                    }
+                }
+            }
+            this.Set<T>().UpdateRange(list);
+            if (save)
+                return this.SaveChanges() > 0;
+            return true;
+        }
+        public async Task<bool> UpddateAsync<T>(T entity, bool save = true, List<string> props = null)
+            where T : class
+        {
+            var entry = this.Context.Entry<T>(entity);
+            if (props == null || props.Count == 0)
+                entry.State = EntityState.Modified;
+            else
+            {
+                foreach (var eProp in entry.Properties)
+                {
+                    eProp.IsModified = props.Contains(eProp.Metadata.Name);
+                }
+            }
+            this.Set<T>().Update(entity);
+            if (save)
+                return await this.SaveChangesAsync() > 0;
+            return true;
+        }
+        public async Task<bool> UpdateAsync<T>(List<T> list, bool save = true, List<string> props = null)
+            where T : class
+        {
+            foreach (var entity in list)
+            {
+                var entry = this.Context.Entry<T>(entity);
+                if (props == null || props.Count == 0)
+                    entry.State = EntityState.Modified;
+                else
+                {
+                    foreach (var eProp in entry.Properties)
+                    {
+                        eProp.IsModified = props.Contains(eProp.Metadata.Name);
+                    }
+                }
+            }
+            this.Set<T>().UpdateRange(list);
+            if (save)
+                return await this.SaveChangesAsync() > 0;
+            return true;
+        }
+        public bool Update<T>(Expression<Func<T, bool>> where, Action<T> action)
+            where T : class
+        {
+            var list = this.GetList(where);
+            foreach (var entity in list)
+            {
+                action(entity);
+            }
+            return this.Update(list);
+        }
+        public async Task<bool> UpdateAsync<T>(Expression<Func<T, bool>> where, Action<T> action)
+            where T : class
+        {
+            var list = await this.GetListAsync(where);
+            foreach (var entity in list)
+            {
+                action(entity);
+            }
+            return await this.UpdateAsync(list);
+        }
         #endregion
 
         #region Delete
-
+        public bool Delete<T>(T entity, bool save = true)
+            where T : class
+        {
+            this.Context.Entry<T>(entity).State = EntityState.Deleted;
+            this.Set<T>().Remove(entity);
+            if (save)
+                return this.SaveChanges() > 0;
+            return true;
+        }
+        public bool Delete<T>(List<T> list, bool save = true)
+            where T : class
+        {
+            foreach (var entity in list)
+            {
+                this.Context.Entry<T>(entity).State = EntityState.Deleted;
+            }
+            this.Set<T>().RemoveRange(list);
+            if (save)
+                return this.SaveChanges() > 0;
+            return true;
+        }
+        public async Task<bool> DeleteAsync<T>(T entity, bool save = true)
+            where T : class
+        {
+            this.Context.Entry<T>(entity).State = EntityState.Deleted;
+            this.Set<T>().Remove(entity);
+            if (save)
+                return await this.SaveChangesAsync() > 0;
+            return true;
+        }
+        public async Task<bool> DeleteAsync<T>(List<T> list, bool save = true)
+            where T : class
+        {
+            foreach (var entity in list)
+            {
+                this.Context.Entry<T>(entity).State = EntityState.Deleted;
+            }
+            this.Set<T>().RemoveRange(list);
+            if (save)
+                return await this.SaveChangesAsync() > 0;
+            return true;
+        }
         #endregion
-
 
         #region Map
         public void Map<From, To>(From source, To model)

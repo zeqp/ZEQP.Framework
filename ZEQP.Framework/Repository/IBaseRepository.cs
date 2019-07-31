@@ -163,6 +163,29 @@ namespace ZEQP.Framework
         Task<PageResult<T>> GetPageAsync<T, M>(PageQuery<M> query) where T : class where M : class, new();
         #endregion
 
+        #region Add
+        bool Add<T>(T entity, bool save = true) where T : class;
+        bool Add<T>(List<T> list, bool save = true) where T : class;
+        Task<bool> AddAsync<T>(T entity, bool save = true) where T : class;
+        Task<bool> AddAsync<T>(List<T> list, bool save = true) where T : class;
+        #endregion
+
+        #region Update
+        bool Upddate<T>(T entity, bool save = true, List<string> props = null) where T : class;
+        bool Update<T>(List<T> list, bool save = true, List<string> props = null) where T : class;
+        Task<bool> UpddateAsync<T>(T entity, bool save = true, List<string> props = null) where T : class;
+        Task<bool> UpdateAsync<T>(List<T> list, bool save = true, List<string> props = null) where T : class;
+        bool Update<T>(Expression<Func<T, bool>> where, Action<T> action) where T : class;
+        Task<bool> UpdateAsync<T>(Expression<Func<T, bool>> where, Action<T> action) where T : class;
+        #endregion
+
+        #region Delete
+        bool Delete<T>(T entity, bool save = true) where T : class;
+        bool Delete<T>(List<T> list, bool save = true) where T : class;
+        Task<bool> DeleteAsync<T>(T entity, bool save = true) where T : class;
+        Task<bool> DeleteAsync<T>(List<T> list, bool save = true) where T : class;
+        #endregion
+
         #region Map
         void Map<From, To>(From source, To model);
         TOut Map<TIn, TOut>(TIn source);
