@@ -160,6 +160,14 @@ namespace ZEQP.Framework
 
         #region GetPage
         PageResult<T> GetPage<T, M>(PageQuery<M> query) where T : class where M : class, new();
+        Task<PageResult<T>> GetPageAsync<T, M>(PageQuery<M> query) where T : class where M : class, new();
+        #endregion
+
+        #region Map
+        void Map<From, To>(From source, To model);
+        TOut Map<TIn, TOut>(TIn source);
+        List<TOut> Map<TIn, TOut>(List<TIn> source);
+        List<TOut> Map<TIn, TOut>(IQueryable<TIn> queryable);
         #endregion
     }
 }
