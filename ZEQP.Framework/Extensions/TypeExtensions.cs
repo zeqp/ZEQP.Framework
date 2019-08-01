@@ -41,5 +41,16 @@ namespace ZEQP.Framework
             var defaultVal = propType.GetDefaultVal();
             return val.Equals(defaultVal);
         }
+
+        public static PropertyInfo[] GetProps(this Type type)
+        {
+            var key = "_TypeProperty:" + type.FullName;
+            var instance = SingletonCache<PropertyInfo[]>.Instance;
+            var result = instance.Get(key);
+            if (result != null) return result;
+            result = type.GetProperties();
+            instance.Add(key, result);
+            return result;
+        }
     }
 }

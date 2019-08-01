@@ -34,6 +34,8 @@ namespace ZEQP.Framework
         /// <param name="rollback"></param>
         void Commit(bool rollback = false);
         #endregion
+
+        #region Queryable
         /// <summary>
         /// 当前数据库上下文
         /// </summary>
@@ -46,6 +48,7 @@ namespace ZEQP.Framework
         DbSet<T> Set<T>() where T : class;
         IQueryable<T> GetQueryable<T>() where T : class;
         IQueryable<T> GetQueryable<T>(params Expression<Func<T, object>>[] propertySelectors) where T : class;
+        #endregion
 
         #region SaveChanges
         /// <summary>
@@ -93,6 +96,14 @@ namespace ZEQP.Framework
         /// <param name="track">是否跟踪</param>
         /// <returns>数据库实体</returns>
         Task<T> GetAsync<T>(Expression<Func<T, bool>> predicate, bool track = true) where T : class;
+
+        #region GetModel
+        M GetModel<T, M>(object id) where T : class;
+        Task<M> GetModelAsync<T, M>(object id) where T : class;
+        M GetModel<T, M>(Expression<Func<T, bool>> predicate) where T : class;
+        Task<M> GetModelAsync<T, M>(Expression<Func<T, bool>> predicate) where T : class;
+        #endregion
+
         #endregion
 
         #region GetList
@@ -158,11 +169,29 @@ namespace ZEQP.Framework
         /// <param name="predicate">相询条件</param>
         /// <returns>数据集合</returns>
         Task<List<T>> GetListAsync<T>(IQueryable<T> queryable) where T : class;
+
+        #region GetListModel
+        List<M> GetAllModel<T, M>() where T : class;
+        Task<List<M>> GetAllModelAsync<T, M>() where T : class;
+        List<M> GetListModel<T, M, K>(List<K> ids) where T : class;
+        Task<List<M>> GetListModelAsync<T, M, K>(List<K> ids) where T : class;
+        List<M> GetListModel<T, M>(Expression<Func<T, bool>> predicate) where T : class;
+        Task<List<M>> GetListModelAsync<T, M>(Expression<Func<T, bool>> predicate) where T : class;
+        List<M> GetListModel<T, M>(IQueryable<T> queryable) where T : class;
+        Task<List<M>> GetListModelAsync<T, M>(IQueryable<T> queryable) where T : class;
+        #endregion
+
         #endregion
 
         #region GetPage
-        PageResult<T> GetPage<T, M>(PageQuery<M> query) where T : class where M : class, new();
-        Task<PageResult<T>> GetPageAsync<T, M>(PageQuery<M> query) where T : class where M : class, new();
+        PageResult<T> GetPage<T, Q>(PageQuery<Q> query) where T : class where Q : class, new();
+        Task<PageResult<T>> GetPageAsync<T, Q>(PageQuery<Q> query) where T : class where Q : class, new();
+
+        #region GetPageModel
+        PageResult<M> GetPageModel<T, Q, M>(PageQuery<Q> query) where T : class where Q : class, new();
+        Task<PageResult<M>> GetPageModelAsync<T, Q, M>(PageQuery<Q> query) where T : class where Q : class, new();
+        #endregion
+
         #endregion
 
         #region Add
@@ -170,6 +199,18 @@ namespace ZEQP.Framework
         bool Add<T>(List<T> list, bool save = true) where T : class;
         Task<bool> AddAsync<T>(T entity, bool save = true) where T : class;
         Task<bool> AddAsync<T>(List<T> list, bool save = true) where T : class;
+        bool AddOrUpdate<T>(T entity, bool save = true) where T : class;
+        Task<bool> AddOrUpdateAsync<T>(T entity, bool save = true) where T : class;
+
+        #region AddModel
+        bool AddModel<T, M>(M model) where T : class;
+        bool AddModel<T, M>(List<M> list) where T : class;
+        Task<bool> AddModelAsync<T, M>(M model) where T : class;
+        Task<bool> AddModelAsync<T, M>(List<M> list) where T : class;
+        bool AddOrUpdateModel<T, M>(M model) where T : class;
+        Task<bool> AddOrUpdateModelAsync<T, M>(M model) where T : class;
+        #endregion
+
         #endregion
 
         #region Update
@@ -179,6 +220,14 @@ namespace ZEQP.Framework
         Task<bool> UpdateAsync<T>(List<T> list, bool save = true, List<string> props = null) where T : class;
         bool Update<T>(Expression<Func<T, bool>> where, Action<T> action) where T : class;
         Task<bool> UpdateAsync<T>(Expression<Func<T, bool>> where, Action<T> action) where T : class;
+
+        #region UpdateModel
+        bool Update<T, M>(M model) where T : class;
+        bool Update<T, M>(List<M> list) where T : class;
+        Task<bool> UpdateAsync<T, M>(M model) where T : class;
+        Task<bool> UpdateAsync<T, M>(List<M> list) where T : class;
+        #endregion
+
         #endregion
 
         #region Delete
