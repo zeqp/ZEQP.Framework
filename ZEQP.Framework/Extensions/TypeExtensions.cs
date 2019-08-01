@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ZEQP.Framework
 {
-    public static class TypeHelper
+    public static class TypeExtensions
     {
         /// <summary>
         /// 拿到默认值

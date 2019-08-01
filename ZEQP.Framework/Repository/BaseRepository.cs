@@ -18,7 +18,29 @@ namespace ZEQP.Framework
             this.Context = context;
             this.Mapper = mapper;
         }
+
+        #region Queryable
         public DbSet<T> Set<T>() where T : class => this.Context.Set<T>();
+        public IQueryable<T> GetQueryable<T>()
+            where T : class
+        {
+            return this.Set<T>();
+        }
+        public IQueryable<T> GetQueryable<T>(params Expression<Func<T, object>>[] propertySelectors)
+            where T : class
+        {
+            if (propertySelectors.IsNullOrEmpty())
+            {
+                return this.GetQueryable<T>();
+            }
+            var query = this.GetQueryable<T>();
+            foreach (var propertySelector in propertySelectors)
+            {
+                query = query.Include(propertySelector);
+            }
+            return query;
+        }
+        #endregion
 
         #region Transaction
         public IDbContextTransaction Transaction => this.Context.Database.CurrentTransaction;
@@ -472,6 +494,7 @@ namespace ZEQP.Framework
         public bool Update<T>(T entity, bool save = true, List<string> props = null)
             where T : class
         {
+            this.AttachIfNot<T>(entity);
             var entry = this.Context.Entry<T>(entity);
             if (props == null || props.Count == 0)
                 entry.State = EntityState.Modified;
@@ -482,7 +505,6 @@ namespace ZEQP.Framework
                     eProp.IsModified = props.Contains(eProp.Metadata.Name);
                 }
             }
-            this.Set<T>().Update(entity);
             if (save)
                 return this.SaveChanges() > 0;
             return true;
@@ -492,6 +514,7 @@ namespace ZEQP.Framework
         {
             foreach (var entity in list)
             {
+                this.AttachIfNot<T>(entity);
                 var entry = this.Context.Entry<T>(entity);
                 if (props == null || props.Count == 0)
                     entry.State = EntityState.Modified;
@@ -503,7 +526,6 @@ namespace ZEQP.Framework
                     }
                 }
             }
-            this.Set<T>().UpdateRange(list);
             if (save)
                 return this.SaveChanges() > 0;
             return true;
@@ -511,6 +533,7 @@ namespace ZEQP.Framework
         public async Task<bool> UpdateAsync<T>(T entity, bool save = true, List<string> props = null)
             where T : class
         {
+            this.AttachIfNot<T>(entity);
             var entry = this.Context.Entry<T>(entity);
             if (props == null || props.Count == 0)
                 entry.State = EntityState.Modified;
@@ -521,7 +544,6 @@ namespace ZEQP.Framework
                     eProp.IsModified = props.Contains(eProp.Metadata.Name);
                 }
             }
-            this.Set<T>().Update(entity);
             if (save)
                 return await this.SaveChangesAsync() > 0;
             return true;
@@ -531,6 +553,7 @@ namespace ZEQP.Framework
         {
             foreach (var entity in list)
             {
+                this.AttachIfNot<T>(entity);
                 var entry = this.Context.Entry<T>(entity);
                 if (props == null || props.Count == 0)
                     entry.State = EntityState.Modified;
@@ -542,7 +565,6 @@ namespace ZEQP.Framework
                     }
                 }
             }
-            this.Set<T>().UpdateRange(list);
             if (save)
                 return await this.SaveChangesAsync() > 0;
             return true;
@@ -666,6 +688,39 @@ namespace ZEQP.Framework
         public List<TOut> Map<TIn, TOut>(IQueryable<TIn> queryable)
         {
             return this.Map<TIn, TOut>(queryable.ToList());
+        }
+        #endregion
+
+        #region Helper
+        public Expression<Func<T, K>> CreateKeySelector<T, K>(string key)
+        {
+            ParameterExpression param = Expression.Parameter(typeof(T));
+            var left = Expression.Property(param, typeof(K), key);
+            return Expression.Lambda<Func<T, K>>(left);
+        }
+        public Expression<Func<T, bool>> CreatePredicate<T, K>(string key, K value, Func<Expression, Expression, BinaryExpression> func)
+        {
+            var lambdaParam = Expression.Parameter(typeof(T));
+            var leftExpression = Expression.PropertyOrField(lambdaParam, key);
+            Expression<Func<K>> closure = () => value;
+            var rightExpression = Expression.Convert(closure.Body, leftExpression.Type);
+            var lambdaBody = func(leftExpression, rightExpression);
+            return Expression.Lambda<Func<T, bool>>(lambdaBody, lambdaParam);
+        }
+        //public Expression<Func<T, bool>> CreatePredicate<T, K>(string key, List<K> value, Func<Expression, Expression, BinaryExpression> fun)
+        //{
+        //    var keySelector = this.CreateKeySelector<T, K>(key);
+        //    var right = Expression.Constant(value, typeof(K));
+        //    Expression filter = fun(keySelector.Body, right);
+        //    return Expression.Lambda<Func<T, bool>>(filter, keySelector.Parameters);
+        //}
+        protected virtual void AttachIfNot<T>(T entity)
+            where T : class
+        {
+            if (!this.Set<T>().Local.Contains(entity))
+            {
+                this.Set<T>().Attach(entity);
+            }
         }
         #endregion
     }

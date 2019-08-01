@@ -9,7 +9,7 @@ namespace ZEQP.Framework
     /// <summary>
     /// Json帮助类
     /// </summary>
-    public static class JsonHelper
+    public static class JsonExtensions
     {
         /// <summary>
         /// 把对象转换为Json字符串
