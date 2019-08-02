@@ -251,16 +251,9 @@ namespace ZEQP.Framework
                     des.Key = bKey;
                     using (CryptoStream cryptoStream = new CryptoStream(Memory, des.CreateEncryptor(), CryptoStreamMode.Write))
                     {
-                        try
-                        {
-                            cryptoStream.Write(plainBytes, 0, plainBytes.Length);
-                            cryptoStream.FlushFinalBlock();
-                            return Memory.ToArray();
-                        }
-                        catch (Exception ex)
-                        {
-                            return null;
-                        }
+                        cryptoStream.Write(plainBytes, 0, plainBytes.Length);
+                        cryptoStream.FlushFinalBlock();
+                        return Memory.ToArray();
                     }
                 }
             }
@@ -323,7 +316,7 @@ namespace ZEQP.Framework
         }
 
         #endregion
-        
+
 
         #region MD5
         /// <summary>
@@ -565,7 +558,7 @@ namespace ZEQP.Framework
         /// </summary>
         /// <param name="length">decryption key length range is 16 -48</param>
         /// <returns>DecryptionKey</returns>
-        public static string CreateDecryptionKey([Range(16,48)]int length)
+        public static string CreateDecryptionKey([Range(16, 48)]int length)
         {
             return CreateMachineKey(length);
         }
