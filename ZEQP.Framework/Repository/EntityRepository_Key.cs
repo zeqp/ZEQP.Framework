@@ -9,11 +9,12 @@ using System.Threading.Tasks;
 
 namespace ZEQP.Framework
 {
-    public class EntityRepository<T, K> : BaseRepository<T,K>, IEntityRepository<T, K>
+    public class EntityRepository<T, K> : BaseRepository<T, K>, IEntityRepository<T, K>
         where T : BaseEntity<K>
     {
         public EntityRepository(DbContext context, IMapper mapper)
             : base(context, mapper)
         { }
+
     }
 }
