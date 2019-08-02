@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ZEQP.Framework.Base
+namespace ZEQP.Framework
 {
     public class BaseEntityTypeConfig<T> : IEntityTypeConfiguration<T>
         where T : BaseEntity

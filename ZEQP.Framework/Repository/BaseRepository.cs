@@ -943,4 +943,20 @@ namespace ZEQP.Framework
         }
         #endregion
     }
+
+    public class BaseRepository<T, K> : BaseRepository, IBaseRepository<T, K>
+        where T : BaseEntity<K>
+    {
+        public BaseRepository(DbContext context, IMapper mapper)
+            : base(context, mapper)
+        { }
+    }
+
+    public class BaseRepository<T> : BaseRepository<T, long>, IBaseRepository<T>
+        where T : BaseEntity
+    {
+        public BaseRepository(DbContext context, IMapper mapper)
+            : base(context, mapper)
+        { }
+    }
 }

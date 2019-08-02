@@ -250,4 +250,14 @@ namespace ZEQP.Framework
         List<TOut> Map<TIn, TOut>(IQueryable<TIn> queryable);
         #endregion
     }
+
+    public interface IBaseRepository<T, K> : IBaseRepository
+        where T : IBaseEntity<K>
+    {
+
+    }
+    public interface IBaseRepository<T> : IBaseRepository<T, long>
+        where T : IBaseEntity
+    {
+    }
 }

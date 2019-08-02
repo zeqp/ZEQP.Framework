@@ -12,4 +12,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ZEQP.Framework\ZEQP.Framework.csproj" />
+  </ItemGroup>
+
 </Project>
