@@ -13,7 +13,7 @@ namespace ZEQP.Framework
         public T Id { get; set; }
     }
     /// <summary>
-    /// 自增实体基类
+    /// 实体基类
     /// </summary>
     public class BaseEntity : BaseEntity<long>, IBaseEntity
     {
@@ -30,12 +30,10 @@ namespace ZEQP.Framework
         public DateTime ModifyTime { get; set; }
     }
     /// <summary>
-    /// 自增基本实体类
+    /// 基本实体类
     /// </summary>
-    public class BusEntity : BaseEntity, IBusEntity
+    public class BusEntity : BusEntity<long>, IBusEntity
     {
-        public DateTime CreateTime { get; set; }
-        public bool Deleted { get; set; }
-        public DateTime ModifyTime { get; set; }
+
     }
 }
