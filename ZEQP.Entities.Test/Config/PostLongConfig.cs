@@ -8,9 +8,5 @@ namespace ZEQP.Entities.Test.Config
 {
     public class PostLongConfig : BaseEntityTypeConfig<PostLong>
     {
-        public override void Configure(EntityTypeBuilder<PostLong> builder)
-        {
-            base.Configure(builder);
-        }
     }
 }

@@ -8,9 +8,5 @@ namespace ZEQP.Entities.Test.Config
 {
     public class BlogLongConfig : BaseEntityTypeConfig<BlogLong>
     {
-        public override void Configure(EntityTypeBuilder<BlogLong> builder)
-        {
-            base.Configure(builder);
-        }
     }
 }
