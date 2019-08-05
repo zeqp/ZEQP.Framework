@@ -21,19 +21,21 @@ namespace ZEQP.Framework
 
         #region Queryable
         public virtual DbSet<T> Set<T>() where T : class => this.Context.Set<T>();
-        public virtual IQueryable<T> GetQueryable<T>()
+        public virtual IQueryable<T> GetQueryable<T>(bool track = true)
             where T : class
         {
-            return this.Set<T>();
+            if (track)
+                return this.Set<T>();
+            return this.Set<T>().AsNoTracking();
         }
-        public virtual IQueryable<T> GetQueryable<T>(params Expression<Func<T, object>>[] propertySelectors)
+        public virtual IQueryable<T> GetQueryable<T>(bool track = true, params Expression<Func<T, object>>[] propertySelectors)
             where T : class
         {
             if (propertySelectors.IsNullOrEmpty())
             {
-                return this.GetQueryable<T>();
+                return this.GetQueryable<T>(track);
             }
-            var query = this.GetQueryable<T>();
+            var query = this.GetQueryable<T>(track);
             foreach (var propertySelector in propertySelectors)
             {
                 query = query.Include(propertySelector);
@@ -85,16 +87,12 @@ namespace ZEQP.Framework
         public virtual T Get<T>(Expression<Func<T, bool>> predicate, bool track = true)
             where T : class
         {
-            if (track)
-                return this.Set<T>().Where(predicate).SingleOrDefault();
-            return this.Set<T>().AsNoTracking().Where(predicate).SingleOrDefault();
+            return this.GetQueryable<T>(track).Where(predicate).SingleOrDefault();
         }
         public virtual Task<T> GetAsync<T>(Expression<Func<T, bool>> predicate, bool track = true)
             where T : class
         {
-            if (track)
-                return this.Set<T>().Where(predicate).SingleOrDefaultAsync();
-            return this.Set<T>().AsNoTracking().Where(predicate).SingleOrDefaultAsync();
+            return this.GetQueryable<T>(track).Where(predicate).SingleOrDefaultAsync();
         }
 
         #region GetModel
@@ -130,16 +128,12 @@ namespace ZEQP.Framework
         public virtual List<T> GetAll<T>(bool track = true)
             where T : class
         {
-            if (track)
-                return this.Set<T>().ToList();
-            return this.Set<T>().AsNoTracking().ToList();
+            return this.GetQueryable<T>(track).ToList();
         }
         public virtual Task<List<T>> GetAllAsync<T>(bool track = true)
             where T : class
         {
-            if (track)
-                return this.Set<T>().ToListAsync();
-            return this.Set<T>().AsNoTracking().ToListAsync();
+            return this.GetQueryable<T>(track).ToListAsync();
         }
         public virtual List<T> GetList<T, K>(List<K> ids, bool track = true)
             where T : class
@@ -169,16 +163,12 @@ namespace ZEQP.Framework
         public virtual List<T> GetList<T>(Expression<Func<T, bool>> predicate, bool track = true)
             where T : class
         {
-            if (track)
-                return this.Set<T>().Where(predicate).ToList();
-            return this.Set<T>().AsNoTracking().Where(predicate).ToList();
+            return this.GetQueryable<T>(track).Where(predicate).ToList();
         }
         public virtual Task<List<T>> GetListAsync<T>(Expression<Func<T, bool>> predicate, bool track = true)
             where T : class
         {
-            if (track)
-                return this.Set<T>().Where(predicate).ToListAsync();
-            return this.Set<T>().AsNoTracking().Where(predicate).ToListAsync();
+            return this.GetQueryable<T>(track).Where(predicate).ToListAsync();
         }
         public virtual List<T> GetList<T>(IQueryable<T> queryable)
             where T : class
@@ -249,7 +239,7 @@ namespace ZEQP.Framework
             where T : class
             where Q : class, new()
         {
-            var queryable = this.Set<T>().AsNoTracking().AsQueryable();
+            var queryable = this.GetQueryable<T>(false);
             var model = query.Query;
             var outer = PredicateBuilder.True<T>();
             var entityProps = typeof(T).GetProps();

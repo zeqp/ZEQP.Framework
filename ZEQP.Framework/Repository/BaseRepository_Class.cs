@@ -22,14 +22,14 @@ namespace ZEQP.Framework
             return base.Set<T>();
         }
 
-        public virtual IQueryable<T> GetQueryable()
+        public virtual IQueryable<T> GetQueryable(bool track = true)
         {
-            return base.GetQueryable<T>();
+            return base.GetQueryable<T>(track);
         }
 
-        public virtual IQueryable<T> GetQueryable(params Expression<Func<T, object>>[] propertySelectors)
+        public virtual IQueryable<T> GetQueryable(bool track = true, params Expression<Func<T, object>>[] propertySelectors)
         {
-            return base.GetQueryable<T>(propertySelectors);
+            return base.GetQueryable<T>(track, propertySelectors);
         }
         #endregion
 

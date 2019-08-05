@@ -17,15 +17,11 @@ namespace ZEQP.Framework
         { }
         public override List<T> GetList(List<K> ids, bool track = true)
         {
-            if (track)
-                return this.Set().Where(w => ids.Contains(w.Id)).ToList();
-            return this.Set().AsNoTracking().Where(w => ids.Contains(w.Id)).ToList();
+            return this.GetQueryable(track).Where(w => ids.Contains(w.Id)).ToList();
         }
         public override Task<List<T>> GetListAsync(List<K> ids, bool track = true)
         {
-            if (track)
-                return this.Set().Where(w => ids.Contains(w.Id)).ToListAsync();
-            return this.Set().AsNoTracking().Where(w => ids.Contains(w.Id)).ToListAsync();
+            return this.GetQueryable(track).Where(w => ids.Contains(w.Id)).ToListAsync();
         }
         public override bool AddOrUpdate(T entity, bool save = true)
         {

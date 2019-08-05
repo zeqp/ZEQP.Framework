@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +15,11 @@ namespace ZEQP.Framework
         public BusRepository(DbContext context, IMapper mapper)
             : base(context, mapper)
         { }
+
+        public override IQueryable<T> GetQueryable(bool track = true)
+        {
+            return base.GetQueryable(track).Where(w => w.Deleted == false);
+        }
 
         public override bool Delete(object id)
         {

@@ -19,8 +19,8 @@ namespace ZEQP.Framework
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         DbSet<T> Set();
-        IQueryable<T> GetQueryable();
-        IQueryable<T> GetQueryable(params Expression<Func<T, object>>[] propertySelectors);
+        IQueryable<T> GetQueryable(bool track = true);
+        IQueryable<T> GetQueryable(bool track = true,params Expression<Func<T, object>>[] propertySelectors);
         #endregion
 
         #region Get
