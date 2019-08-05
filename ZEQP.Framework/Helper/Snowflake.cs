@@ -17,6 +17,7 @@ namespace ZEQP.Framework
         private static readonly Lazy<Snowflake> SingletonInstance = new Lazy<Snowflake>(() => new Snowflake());
         public SnowflakeConfig Config { get; set; }
         private static readonly Stopwatch _sw = Stopwatch.StartNew();
+        private readonly TimeSpan Offset;
 
         private int _sequence = 0;
         private long _lastgen = -1;
@@ -46,6 +47,9 @@ namespace ZEQP.Framework
                 throw new Exception("ID位不能大于31");
             if (this.Config.SeqBits > 31)
                 throw new Exception("序号位不能大于31");
+
+            this.Offset = DateTimeOffset.UtcNow - this.Config.Epoch;
+
             MASK_TIME = this.GetMask(this.Config.TimeBits);
             MASK_GENERATOR = this.GetMask(this.Config.IdBits);
             MASK_SEQUENCE = this.GetMask(this.Config.SeqBits);
@@ -67,7 +71,7 @@ namespace ZEQP.Framework
         }
         private long GetTicks()
         {
-            return ((DateTimeOffset.UtcNow - this.Config.Epoch).Ticks + _sw.Elapsed.Ticks) / this.Config.Duration.Ticks;
+            return (this.Offset.Ticks + _sw.Elapsed.Ticks) / this.Config.Duration.Ticks;
         }
         public long CreateId()
         {
