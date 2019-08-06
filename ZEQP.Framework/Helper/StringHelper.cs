@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ZEQP.Framework
 {
-    public static class StringHelper
+    public static partial class StringHelper
     {
         public static string GetRandomStr(int length)
         {

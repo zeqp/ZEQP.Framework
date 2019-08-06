@@ -20,6 +20,8 @@ namespace ZEQP.Framework
         /// <returns></returns>
         public static string ToJson(this object obj, bool isCamelCase = false)
         {
+            if (obj == null)
+                return string.Empty;
             if (isCamelCase)
             {
                 return JsonConvert.SerializeObject(obj, new JsonSerializerSettings
@@ -39,8 +41,10 @@ namespace ZEQP.Framework
         /// <typeparam name="T"></typeparam>
         /// <param name="json"></param>
         /// <returns></returns>
-        public static T ToModel<T>(this string json)
+        public static T ToObject<T>(this string json)
         {
+            if (string.IsNullOrWhiteSpace(json))
+                return default(T);
             return JsonConvert.DeserializeObject<T>(json);
         }
     }

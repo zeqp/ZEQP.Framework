@@ -105,7 +105,7 @@ namespace ZEQP.Framework
     public class SnowflakeConfig
     {
         /// <summary>
-        /// 应用程序ID
+        /// (应用程序/服务/进程)ID
         /// </summary>
         public int AppId { get; set; }
         /// <summary>

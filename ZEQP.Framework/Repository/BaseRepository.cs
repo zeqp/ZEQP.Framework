@@ -241,7 +241,7 @@ namespace ZEQP.Framework
         {
             var queryable = this.GetQueryable<T>(false);
             var model = query.Query;
-            var outer = PredicateBuilder.True<T>();
+            var outer = Extensions.True<T>();
             var entityProps = typeof(T).GetProps();
             if (model != null)
             {
@@ -251,7 +251,7 @@ namespace ZEQP.Framework
                 if (!String.IsNullOrEmpty(query.Match))
                 {
                     var nameOrCodeProp = listProp.Where(w => w.Name.EndsWith("Name") || w.Name.EndsWith("Code")).ToList();
-                    var inner = PredicateBuilder.False<T>();
+                    var inner = Extensions.False<T>();
                     foreach (var prop in nameOrCodeProp)
                     {
                         //是否存再此字段，只有存再的字段才能做模糊查询
