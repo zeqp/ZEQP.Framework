@@ -15,9 +15,8 @@ namespace ZEQP.Framework.Test
         {
             Thread.ParallelExecute(() =>
             {
-                Console.WriteLine($"{Task.CurrentId}(ObjectId)\t{ObjectId.GenerateNewId()}");
-                Console.WriteLine($"{Task.CurrentId}(String)\t{ObjectId.GenerateNewStringId()}");
-            }, 100);
+                Console.WriteLine($"{Task.CurrentId}\t{ObjectId.GenerateNewId()}");
+            }, 10000);
         }
     }
 }
