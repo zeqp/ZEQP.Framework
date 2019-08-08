@@ -7,13 +7,13 @@ namespace ZEQP.Framework
     /// <summary>
     /// 基类实体接口
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public interface IBaseEntity<T>
+    /// <typeparam name="K"></typeparam>
+    public interface IBaseEntity<K>
     {
         /// <summary>
         /// Id主键
         /// </summary>
-        T Id { get; set; }
+        K Id { get; set; }
     }
     /// <summary>
     /// 自增基类实体接口
@@ -25,8 +25,8 @@ namespace ZEQP.Framework
     /// <summary>
     /// 基本类实体接口
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public interface IBusEntity<T> : IBaseEntity<T>
+    /// <typeparam name="K"></typeparam>
+    public interface IBusEntity<K> : IBaseEntity<K>
     {
         /// <summary>
         /// 创建时间
@@ -47,4 +47,34 @@ namespace ZEQP.Framework
     public interface IBusEntity : IBusEntity<long>
     {
     }
+
+    /// <summary>
+    /// 树结构基类实体
+    /// </summary>
+    /// <typeparam name="K"></typeparam>
+    public interface ITreeEntity<K> : IBaseEntity<K>
+    {
+        /// <summary>
+        /// 父节点Id
+        /// </summary>
+        K ParentId { get; set; }
+        /// <summary>
+        /// 是否叶子节点
+        /// </summary>
+        bool IsLeaf { get; set; }
+        /// <summary>
+        /// 层级
+        /// </summary>
+        int Level { get; set; }
+        /// <summary>
+        /// 全路径
+        /// </summary>
+        string Path { get; set; }
+    }
+
+    /// <summary>
+    /// 树结构基类实体
+    /// </summary>
+    public interface ITreeEntity : ITreeEntity<long>
+    { }
 }
