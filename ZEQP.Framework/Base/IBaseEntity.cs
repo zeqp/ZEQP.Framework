@@ -70,11 +70,14 @@ namespace ZEQP.Framework
         /// 全路径
         /// </summary>
         string Path { get; set; }
+        void InitPath(ITreeEntity<K> parent);
     }
 
     /// <summary>
     /// 树结构基类实体
     /// </summary>
     public interface ITreeEntity : ITreeEntity<long>
-    { }
+    {
+
+    }
 }

@@ -47,6 +47,18 @@ namespace ZEQP.Framework
         public bool IsLeaf { get; set; }
         public int Level { get; set; }
         public string Path { get; set; }
+
+        public virtual void InitPath(ITreeEntity<K> parent)
+        {
+            if (parent == null)
+            {
+                this.Level = 1;
+                this.Path = $",{this.Id},";
+                return;
+            }
+            this.Level = parent.Level + 1;
+            this.Path = $"{parent.Path}{this.Id},";
+        }
     }
     /// <summary>
     /// 树结构基类实体
