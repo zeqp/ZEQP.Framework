@@ -34,6 +34,16 @@ namespace ZEQP.Framework
             this.StringInstance.Add(key, value, expiresAt);
         }
         /// <summary>
+        /// 增加缓存
+        /// </summary>
+        /// <param name="key">Key</param>
+        /// <param name="value">Value</param>
+        /// <param name="expiresAt">过期时间</param>
+        public void Add(string key, string value, TimeSpan expiresAt)
+        {
+            this.Add(key, value, DateTime.Now.Add(expiresAt));
+        }
+        /// <summary>
         /// 拿到缓存值
         /// 如果不存再，就返回null
         /// </summary>
@@ -112,6 +122,16 @@ namespace ZEQP.Framework
                 this.CacheTime.TryRemove(key, out outTime);
             if (expiresAt.HasValue)
                 this.CacheTime.AddOrUpdate(key, expiresAt.Value, (k, v) => { return expiresAt.Value; });
+        }
+        /// <summary>
+        /// 增加缓存
+        /// </summary>
+        /// <param name="key">Key</param>
+        /// <param name="value">Value</param>
+        /// <param name="expiresAt">过期时间</param>
+        public void Add(string key, T value, TimeSpan expiresAt)
+        {
+            this.Add(key, value, DateTime.Now.Add(expiresAt));
         }
         /// <summary>
         /// 拿到缓存值

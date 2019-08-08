@@ -89,7 +89,6 @@ namespace ZEQP.Framework
             return Reflection.GetDescription( type, GetName( type, member ) );
         }
 
-
         /// <summary>
         /// 获取名称集合
         /// </summary>
